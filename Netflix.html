@@ -1,130 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Netflix Clone</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #141414;
-      color: #fff;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      background-color: #000;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #e50914;
-    }
-
-    nav a {
-      margin: 0 15px;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .hero {
-      position: relative;
-      height: 60vh;
-      background: url('https://via.placeholder.com/1200x600') center/cover no-repeat;
-      display: flex;
-      align-items: flex-end;
-      padding: 40px;
-    }
-
-    .hero h1 {
-      font-size: 48px;
-      margin: 0;
-    }
-
-    .row {
-      padding: 20px;
-    }
-
-    .row h2 {
-      margin-bottom: 10px;
-    }
-
-    .thumbnails {
-      display: flex;
-      overflow-x: auto;
-    }
-
-    .thumbnail {
-      flex: 0 0 auto;
-      width: 200px;
-      height: 120px;
-      margin-right: 10px;
-      background-color: #333;
-      background-size: cover;
-      background-position: center;
-      border-radius: 4px;
-      transition: transform 0.3s;
-    }
-
-    .thumbnail:hover {
-      transform: scale(1.1);
-    }
-
-    footer {
-      padding: 20px;
-      text-align: center;
-      background-color: #000;
-      font-size: 14px;
-      color: #777;
-    }
-  </style>
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="main.css">
+  </head>
 <body>
-  <header>
-    <div class="logo">NETFLIX</div>
-    <nav>
+  <div class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" class="logo">
+    <div class="nav">
       <a href="#">Home</a>
       <a href="#">TV Shows</a>
       <a href="#">Movies</a>
+      <a href="#">New & Popular</a>
       <a href="#">My List</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <h1>Featured Title</h1>
-  </section>
-
-  <section class="row">
-    <h2>Trending Now</h2>
-    <div class="thumbnails">
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=1');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=2');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=3');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=4');"></div>
     </div>
-  </section>
-
-  <section class="row">
-    <h2>Top Picks for You</h2>
-    <div class="thumbnails">
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=A');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=B');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=C');"></div>
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=D');"></div>
+  </div>
+  <div class="hero">
+    <div class="hero-title">Stranger Things</div>
+    <div class="hero-desc">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.</div>
+    <div class="hero-btns">
+      <button>Play</button>
+      <button>More Info</button>
     </div>
-  </section>
-
-  <footer>
-    &copy; 2025 Netflix Clone. Built for learning and fun.
-  </footer>
+  </div>
+  <div class="section">
+    <div class="section-title">Popular on Netflix</div>
+    <div class="movies">
+      <div class="movie">
+        <img src="https://cdn.prod.website-files.com/687e8d1b96312cc631cafec7/68c48d141e8381607486e3fb_66a4263d01a185d5ea22eeec_6408f6e7b5811271dc883aa8_batman-min.png" alt="Movie 1">
+        <div class="movie-title">The Batman</div>
+      </div>
+      <div class="movie">
+        <img src="https://i.pinimg.com/236x/6d/2d/b6/6d2db6c8ad3bebffabd48f820de0024d.jpg" alt="Movie 2">
+        <div class="movie-title">Peaky Blinders</div>
+      </div>
+      <div class="movie">
+        <img src="https://m.media-amazon.com/images/I/81gI4oDuFOL.jpg" alt="Movie 3">
+        <div class="movie-title">Narcos</div>
+      </div>
+      <!-- Add more movies as needed -->
+    </div>
+  </div>
 </body>
 </html>
-
-
-
-
