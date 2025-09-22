@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FEWD ASSIGNMENT</title>
+<style>
+  :root{
+    --title-green:#179b39;
+    --card-cyan:#00f0ff;
+    --button-yellow:#ffee00;
+    --page-bg:#f5f6fa;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
+    background: var(--page-bg);
+  }
+
+  /* Header */
+  .page{
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 54px 16px 80px;
+  }
+  h1{
+    margin: 0 0 28px;
+    text-align:center;
+    font-weight: 800;
+    letter-spacing: .5px;
+    color: var(--title-green);
+    font-size: 32px;
+  }
+
+  /* Cards row */
+  .cards{
+    display: flex;
+    justify-content: center;
+    gap: 34px;
+    flex-wrap: wrap;
+    padding-top: 6px;
+  }
+
+  .card{
+    width: 260px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  }
+
+  .thumb{
+    width: 100%;
+    height: 170px;
+    overflow: hidden;
+    background: #ddd;
+  }
+  .thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display:block;
+  }
+
+  .content{
+    background: var(--card-cyan);
+    padding: 14px 16px 16px;
+    min-height: 108px;
+  }
+
+  .course{
+    margin: 0 0 12px;
+    font-weight: 800;
+    line-height: 1.1;
+    font-size: 15.5px;
+  }
+
+  .btn{
+    display: inline-block;
+    border: none;
+    background: var(--button-yellow);
+    color: #000;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 rgba(0,0,0,.2);
+  }
+  .btn:active{ transform: translateY(1px); }
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1>FEWD ASSIGNMENT</h1>
+
+    <div class="cards">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1581091215367-59ab6b4b4d4b?q=80&w=1200&auto=format&fit=crop" alt="chip">
+        </div>
+        <div class="content">
+          <p class="course">B.Tech. in Computer Science<br>Engineering</p>
+          <button class="btn">CLICK HERE</button>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1200&auto=format&fit=crop" alt="ai">
+        </div>
+        <div class="content">
+          <p class="course">B.Tech. in Computer Science<br>Engineering</p>
+          <button class="btn">CLICK HERE</button>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop" alt="data">
+        </div>
+        <div class="content">
+          <p class="course">B.Tech. in Computer Science<br>Engineering</p>
+          <button class="btn">CLICK HERE</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</body>
+</html>

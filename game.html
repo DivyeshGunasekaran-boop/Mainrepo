@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cosmic Rush: 3D Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #111827; /* Dark gray background */
+        }
+        #game-canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .ui {
+            position: absolute;
+            z-index: 2;
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+        .centered {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .button {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
+        }
+        .selector-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .selector-btn {
+            background-color: rgba(0,0,0,0.3);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            line-height: 36px;
+            text-align: center;
+        }
+        .selector-label {
+            min-width: 200px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .glassmorphism {
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+    </style>
+</head>
+<body>
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Main Menu UI -->
+    <div id="main-menu" class="ui centered w-full max-w-lg text-center glassmorphism">
+        <h1 class="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-pink-500">Cosmic Rush</h1>
+        <p class="mb-8 text-lg text-gray-300">Dodge obstacles and rush through the cosmos!</p>
+
+        <!-- Character Selector -->
+        <div class="selector-container">
+            <button id="prev-char" class="selector-btn">&lt;</button>
+            <div id="char-name" class="selector-label">Bolt</div>
+            <button id="next-char" class="selector-btn">&gt;</button>
+        </div>
+
+        <!-- Map Selector -->
+        <div class="selector-container">
+            <button id="prev-map" class="selector-btn">&lt;</button>
+            <div id="map-name" class="selector-label">Cyber Grid</div>
+            <button id="next-map" class="selector-btn">&gt;</button>
+        </div>
+
+        <button id="start-btn" class="button mt-4">START GAME</button>
+    </div>
+
+    <!-- In-Game HUD -->
+    <div id="hud" class="ui top-4 left-4 text-4xl font-bold hidden">
+        Score: <span id="score">0</span>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="ui centered w-full max-w-lg text-center glassmorphism hidden">
+        <h2 class="text-5xl font-bold mb-4 text-red-500">GAME OVER</h2>
+        <p class="text-2xl mb-2">Final Score</p>
+        <p id="final-score" class="text-6xl font-bold mb-8"></p>
+        <button id="restart-btn" class="button">RESTART</button>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+
+        // --- DOM Elements ---
+        const mainMenu = document.getElementById('main-menu');
+        const hud = document.getElementById('hud');
+        const scoreEl = document.getElementById('score');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const finalScoreEl = document.getElementById('final-score');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // --- Game Setup ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas'), antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        let gameState = 'menu'; // 'menu', 'playing', 'gameover'
+        let player, playerCollider;
+        let speed = 0.2;
+        let score = 0;
+        const lanes = [-3, 0, 3];
+        let currentLane = 1;
+        
+        const worldObjects = [];
+        let clock = new THREE.Clock();
+
+        // --- Game Assets (Characters & Maps) ---
+        const characters = [
+            { name: 'Bolt', model: createBoltModel },
+            { name: 'Blocky', model: createBlockyModel },
+            { name: 'Spike', model: createSpikeModel },
+            { name: 'Orbit', model: createOrbitModel },
+            { name: 'Glider', model: createGliderModel },
+        ];
+        let currentCharIndex = 0;
+
+        const maps = [
+            { name: 'Cyber Grid', colors: { ground: 0x0a0a2a, fog: 0x050515, obstacle: [0x00ffff, 0xff00ff], coin: 0xffff00 } },
+            { name: 'City Scape', colors: { ground: 0x4a4a4a, fog: 0x87ceeb, obstacle: [0x808080, 0xa9a9a9], coin: 0xffd700 } },
+            { name: 'Candy Land', colors: { ground: 0xffc0cb, fog: 0xffe4e1, obstacle: [0xff69b4, 0x8a2be2], coin: 0xf0e68c } },
+        ];
+        let currentMapIndex = 0;
+        
+        // --- Player Character Models ---
+        function createBoltModel() {
+            const group = new THREE.Group();
+            const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, roughness: 0.3 });
+            const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1, 4, 16), material);
+            body.position.y = 1.5;
+            group.add(body);
+            return group;
+        }
+
+        function createBlockyModel() {
+            const group = new THREE.Group();
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffa500, roughness: 0.5 });
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0000ff, roughness: 0.5 });
+            const head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), headMat);
+            head.position.y = 2.5;
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 1.2), bodyMat);
+            body.position.y = 1.25;
+            group.add(head, body);
+            return group;
+        }
+
+        function createSpikeModel() {
+            const group = new THREE.Group();
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xff0000, metalness: 0.5, roughness: 0.2 });
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.7 });
+            const head = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.5, 32), headMat);
+            head.position.y = 2.7;
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1, 2, 32), bodyMat);
+            body.position.y = 1;
+            group.add(head, body);
+            return group;
+        }
+
+        function createOrbitModel() {
+            const group = new THREE.Group();
+            const coreMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xffff00, emissiveIntensity: 0.5 });
+            const orbMat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+            const core = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), coreMat);
+            core.position.y = 2;
+
+            const orbitPivot = new THREE.Group();
+            const orb1 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), orbMat);
+            orb1.position.x = 1.5;
+            const orb2 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), orbMat);
+            orb2.position.x = -1.5;
+            orbitPivot.add(orb1, orb2);
+
+            group.add(core, orbitPivot);
+            group.userData.pivot = orbitPivot;
+            return group;
+        }
+        
+        function createGliderModel() {
+            const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.8, roughness: 0.1 });
+            const wingMat = new THREE.MeshStandardMaterial({ color: 0xff00aa, roughness: 0.4 });
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.3, 2.5, 16), bodyMat);
+            body.position.y = 1.5;
+            const wingShape = new THREE.Shape();
+            wingShape.moveTo(0, 0); wingShape.lineTo(2, 0.5); wingShape.lineTo(2, -0.5); wingShape.lineTo(0, 0);
+            const wingGeo = new THREE.ExtrudeGeometry(wingShape, { depth: 0.2, bevelEnabled: false });
+            const leftWing = new THREE.Mesh(wingGeo, wingMat);
+            leftWing.rotation.y = Math.PI / 2; leftWing.rotation.z = -0.2; leftWing.position.set(-0.5, 1.8, 0);
+            const rightWing = new THREE.Mesh(wingGeo, wingMat);
+            rightWing.rotation.y = -Math.PI / 2; rightWing.rotation.z = 0.2; rightWing.position.set(0.5, 1.8, 0);
+            group.add(body, leftWing, rightWing);
+            return group;
+        }
+
+        // --- Game Initialization ---
+        function init() {
+            // Setup scene based on map selection
+            const mapData = maps[currentMapIndex];
+            scene.background = new THREE.Color(mapData.colors.fog);
+            scene.fog = new THREE.Fog(mapData.colors.fog, 20, 100);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
+
+            // Ground
+            const groundGeo = new THREE.PlaneGeometry(20, 300);
+            const groundMat = new THREE.MeshStandardMaterial({ color: mapData.colors.ground });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.z = -130;
+            scene.add(ground);
+            worldObjects.push(ground);
+
+            // Player
+            player = characters[currentCharIndex].model();
+            player.position.z = 5;
+            scene.add(player);
+            
+            // Player invisible bounding box for collision
+            playerCollider = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+            
+            // Camera Setup
+            camera.position.set(0, 5, 12);
+            camera.lookAt(player.position);
+            
+            // Initial obstacles
+            for (let i = 0; i < 20; i++) {
+                spawnObstacle(-i * 15);
+            }
+        }
+        
+        function resetGame() {
+            // Clear scene
+            while(scene.children.length > 0){ scene.remove(scene.children[0]); }
+            worldObjects.length = 0;
+            
+            // Reset variables
+            speed = 0.2;
+            score = 0;
+            currentLane = 1;
+            scoreEl.innerText = 0;
+
+            init();
+        }
+        
+        function startGame() {
+            resetGame();
+            gameState = 'playing';
+            mainMenu.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            hud.classList.remove('hidden');
+        }
+
+        function gameOver() {
+            gameState = 'gameover';
+            hud.classList.add('hidden');
+            finalScoreEl.innerText = Math.floor(score);
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        // --- Object Spawning ---
+        function spawnObstacle(zPos) {
+            const lane = Math.floor(Math.random() * 3);
+            const type = Math.random() > 0.3 ? 'obstacle' : 'coin';
+            const mapData = maps[currentMapIndex];
+            
+            let newObject;
+            if(type === 'obstacle'){
+                const obstacleType = Math.random();
+                const obsColor = mapData.colors.obstacle[Math.floor(Math.random() * mapData.colors.obstacle.length)];
+                const material = new THREE.MeshStandardMaterial({ color: obsColor });
+                
+                if (obstacleType < 0.5) { // Full barrier
+                    newObject = new THREE.Mesh(new THREE.BoxGeometry(2.5, 3, 0.5), material);
+                    newObject.position.y = 1.5;
+                } else { // Low barrier (jump over)
+                    newObject = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.5, 0.5), material);
+                    newObject.position.y = 0.75;
+                }
+                newObject.userData.type = 'obstacle';
+            } else { // Coin
+                const coinMaterial = new THREE.MeshStandardMaterial({ color: mapData.colors.coin, emissive: mapData.colors.coin });
+                newObject = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.2, 24), coinMaterial);
+                newObject.rotation.x = Math.PI / 2;
+                newObject.position.y = 1.5; // Place at player height
+                newObject.userData.type = 'coin';
+            }
+            
+            newObject.position.set(lanes[lane], newObject.position.y, zPos);
+            scene.add(newObject);
+            worldObjects.push(newObject);
+        }
+
+        // --- Player State & Controls ---
+        let isJumping = false;
+        let isSliding = false;
+        let yVelocity = 0;
+        const gravity = -0.04;
+        const jumpStrength = 1.0;
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                yVelocity = jumpStrength;
+            }
+        }
+
+        function slide() {
+            if (!isSliding && !isJumping) {
+                isSliding = true;
+                player.scale.y = 0.5;
+                player.position.y = -0.75;
+                setTimeout(() => {
+                    isSliding = false;
+                    player.scale.y = 1;
+                    player.position.y = 0;
+                }, 500);
+            }
+        }
+        
+        // --- Input Handling (Keyboard & Touch) ---
+        function handleKeyDown(event) {
+            if (gameState !== 'playing') return;
+            switch (event.key) {
+                case 'ArrowLeft':
+                case 'a':
+                    if (currentLane > 0) currentLane--;
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    if (currentLane < 2) currentLane++;
+                    break;
+                case 'ArrowUp':
+                case 'w':
+                    jump();
+                    break;
+                case 'ArrowDown':
+                case 's':
+                    slide();
+                    break;
+            }
+        }
+        
+        let touchStartX = 0;
+        let touchStartY = 0;
+        function handleTouchStart(event) {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        }
+
+        function handleTouchEnd(event) {
+            if (gameState !== 'playing') return;
+            const touchEndX = event.changedTouches[0].clientX;
+            const touchEndY = event.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
+                if (deltaX > 30 && currentLane < 2) currentLane++;
+                else if (deltaX < -30 && currentLane > 0) currentLane--;
+            } else { // Vertical swipe
+                if (deltaY > 30) slide();
+                else if (deltaY < -30) jump();
+            }
+        }
+        
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        // --- Game Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (gameState !== 'playing') {
+                // Animate character preview in menu
+                if(player && player.userData.pivot) {
+                    player.userData.pivot.rotation.y += 0.02;
+                } else if(player){
+                    player.rotation.y += 0.01;
+                }
+                renderer.render(scene, camera);
+                return;
+            }
+            
+            const delta = clock.getDelta();
+            
+            // Move player forward
+            player.position.z -= speed;
+            camera.position.z -= speed;
+
+            // Smoothly move player between lanes
+            const targetX = lanes[currentLane];
+            player.position.x += (targetX - player.position.x) * 0.2;
+
+            // Handle jumping physics
+            if (isJumping) {
+                player.position.y += yVelocity;
+                yVelocity += gravity;
+                if (player.position.y <= 0) {
+                    player.position.y = 0;
+                    isJumping = false;
+                    yVelocity = 0;
+                }
+            }
+            
+            // Character specific animations
+            if (player.userData.pivot) {
+                player.userData.pivot.rotation.y += 0.1;
+            }
+            
+            // Update player collider
+            playerCollider.setFromObject(player);
+
+            // Check for collisions and manage world objects
+            for (let i = worldObjects.length - 1; i >= 0; i--) {
+                const obj = worldObjects[i];
+                if(obj.userData.type === 'obstacle' || obj.userData.type === 'coin'){
+                     // Collision check
+                    const objCollider = new THREE.Box3().setFromObject(obj);
+                    if (playerCollider.intersectsBox(objCollider)) {
+                        if (obj.userData.type === 'obstacle') {
+                            gameOver();
+                        } else { // Coin
+                            score += 10;
+                            scene.remove(obj);
+                            worldObjects.splice(i, 1);
+                        }
+                    }
+                }
+               
+                // Infinite world generation
+                if (obj.position.z > camera.position.z) {
+                    scene.remove(obj);
+                    worldObjects.splice(i, 1);
+                    if(obj.userData.type === 'obstacle' || obj.userData.type === 'coin'){
+                        spawnObstacle(player.position.z - 150);
+                    }
+                }
+            }
+
+            // Update score and speed
+            score += delta * 10;
+            scoreEl.innerText = Math.floor(score);
+            speed += 0.0001;
+            
+            renderer.render(scene, camera);
+        }
+
+        // --- UI Logic ---
+        const charNameEl = document.getElementById('char-name');
+        const mapNameEl = document.getElementById('map-name');
+        
+        function updateSelectors() {
+            charNameEl.innerText = characters[currentCharIndex].name;
+            mapNameEl.innerText = maps[currentMapIndex].name;
+            resetGame(); // Re-render preview
+        }
+
+        document.getElementById('next-char').addEventListener('click', () => {
+            currentCharIndex = (currentCharIndex + 1) % characters.length;
+            updateSelectors();
+        });
+        document.getElementById('prev-char').addEventListener('click', () => {
+            currentCharIndex = (currentCharIndex - 1 + characters.length) % characters.length;
+            updateSelectors();
+        });
+        document.getElementById('next-map').addEventListener('click', () => {
+            currentMapIndex = (currentMapIndex + 1) % maps.length;
+            updateSelectors();
+        });
+        document.getElementById('prev-map').addEventListener('click', () => {
+            currentMapIndex = (currentMapIndex - 1 + maps.length) % maps.length;
+            updateSelectors();
+        });
+
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+
+        // --- Window Resizing ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- Initial Call ---
+        updateSelectors();
+        animate();
+    </script>
+</body>
+</html>

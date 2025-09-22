@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netflix Clone</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e50914;
+    }
+
+    nav a {
+      margin: 0 15px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .hero {
+      position: relative;
+      height: 60vh;
+      background: url('https://via.placeholder.com/1200x600') center/cover no-repeat;
+      display: flex;
+      align-items: flex-end;
+      padding: 40px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin: 0;
+    }
+
+    .row {
+      padding: 20px;
+    }
+
+    .row h2 {
+      margin-bottom: 10px;
+    }
+
+    .thumbnails {
+      display: flex;
+      overflow-x: auto;
+    }
+
+    .thumbnail {
+      flex: 0 0 auto;
+      width: 200px;
+      height: 120px;
+      margin-right: 10px;
+      background-color: #333;
+      background-size: cover;
+      background-position: center;
+      border-radius: 4px;
+      transition: transform 0.3s;
+    }
+
+    .thumbnail:hover {
+      transform: scale(1.1);
+    }
+
+    footer {
+      padding: 20px;
+      text-align: center;
+      background-color: #000;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">NETFLIX</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">TV Shows</a>
+      <a href="#">Movies</a>
+      <a href="#">My List</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Featured Title</h1>
+  </section>
+
+  <section class="row">
+    <h2>Trending Now</h2>
+    <div class="thumbnails">
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=1');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=2');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=3');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=4');"></div>
+    </div>
+  </section>
+
+  <section class="row">
+    <h2>Top Picks for You</h2>
+    <div class="thumbnails">
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=A');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=B');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=C');"></div>
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/200x120?text=D');"></div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Netflix Clone. Built for learning and fun.
+  </footer>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,32 @@
+label {
+    color: #1822b7;
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px #aaa;
+    text-align: center;
+
+}
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px #aaa;
+}
+input[type="submit"] {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    background: #ff0000;
+    color: #fff;
+    border: mediumaquamarine;
+    border-radius: 4px;
+    cursor:pointer;
+}
+input[type="text"], input[type="email"], input[type="password"],
+select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
