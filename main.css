@@ -1,2 +1,116 @@
-.parent { padding: 20px; }
-.child { margin: 10px; }
+body {
+  margin: 0;
+  background: #141414;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  background-image: url(https://c4.wallpaperflare.com/wallpaper/622/739/588/stranger-things-netflix-clouds-bicycle-wallpaper-preview.jpg);
+  background-size: contain;
+}
+
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: #141414;
+}
+
+.logo {
+  height: 40px;
+}
+
+.nav {
+  margin-left: 40px;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: #e50914;
+}
+
+.hero {
+  position: relative;
+  background: url('https://assets.nflxext.com/ffe/siteui/vlv3/6e7e7e7e-7e7e-7e7e-7e7e-7e7e7e7e7e7e/6e7e7e7e-7e7e-7e7e-7e7e-7e7e7e7e7e7e_BG.jpg') center/cover no-repeat;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px;
+}
+
+.hero-title {
+  font-size: 3em;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px #000;
+  color: red;
+}
+
+.hero-desc {
+  font-size: 1.2em;
+  max-width: 500px;
+  margin: 20px 0;
+  text-shadow: 1px 1px 6px #000;
+  font-style: italic;
+}
+
+.hero-btns button {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  margin-right: 10px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.hero-btns button:hover {
+  background: #b0060f;
+}
+
+.section {
+  padding: 30px 40px;
+}
+
+.section-title {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.movies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.movie {
+  background: #222;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+
+.movie:hover {
+  transform: scale(1.05);
+}
+
+.movie img {
+  width: 100%;
+  display: block;
+}
+
+.movie-title {
+  padding: 10px;
+  font-size: 1em;
+  text-align: center;
+}
